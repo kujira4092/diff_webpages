@@ -1,0 +1,21 @@
+{
+    "https://hogehoge.com/":{
+        "username":"username",
+        "password":"password"
+    },
+    "https://hugahuga.com/":{
+        "username":"username",
+        "password":"password"
+    },
+    "https://mogomogo.com/":{
+        "username":"username",
+        "password":"password"
+    },
+    "https://mogomogo.uat.com/":{
+        "useCookie":{
+            "cookie":"value"
+        },
+        "username":"username",
+        "password":"password"
+    }
+}

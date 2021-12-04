@@ -1,0 +1,71 @@
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+*, *::after, *::before {
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    font-family: Montserrat,NotoSansJP;
+    font-weight: normal;
+}
+
+main{
+    width: 960px;
+}
+input{
+    display: none;
+}
+.inputlabel{
+    display: block;
+    border: 2px dashed #333;
+    width: 400px;
+    min-height: 400px;
+    padding: 10px;
+    position: relative;
+}
+.inputlabel.select::before{
+    content: "";
+}
+.inputlabel::before{
+    content: "クリックして画像を選択してください。";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%);
+    font-size: 18px;
+    color: #ccc;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+    z-index: -1;
+}
+.labelBox{
+    display: flex;
+    justify-content: space-between;
+    padding: 25px;
+}
+.wrap{
+    margin-top: 20px;
+    padding: 25px;
+}
+.testImage{
+    display: flex;
+    width: 320px;
+    margin-top: 20px;
+    justify-content: space-between;
+}
+.testImage img{
+    width: 120px;
+}
+
+#baseArea,#compareArea{
+    display: block;
+    border: 2px dashed #333;
+    width: 400px;
+    min-height: 400px;
+    padding: 10px;
+    position: relative;
+    outline: none;
+}

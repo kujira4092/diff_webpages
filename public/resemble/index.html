@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="//cdn.jsdelivr.net/npm/resemblejs@4.0.0/resemble.min.js"></script>
+    <script>
+        var filelist_base = [];
+        var filelist_compare = [];
+        var arr_b = [];
+        var arr_c = [];
+        function flReader(file,tag){
+            var filereader = new FileReader();
+            filereader.onload = function(){
+                const obj = new Object();
+                obj.name = file.name;
+                obj.bin = this.result;
+                if(tag == "compare"){
+                    arr_c.push(obj);
+                    filelist_compare = arr_c;
+                }
+                if(tag == "base"){
+                    arr_b.push(obj);
+                    filelist_base = arr_b;
+                }
+            }
+            filereader.readAsDataURL(file);
+        };
+        function img2base64(img){
+            const canvas = document.createElement("canvas");
+            var mime_type = undefined;
+            var ext = img.src.split('.').pop().toLowerCase();
+            if(ext == "png"){
+                mime_type = 'image/png';
+            }
+            if(ext == "jpg" || ext == "jpeg"){
+                mime_type = 'image/jpeg';
+            }
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img,0,0);
+            return canvas.toDataURL(mime_type);
+        };
+        function test2(){
+            console.log(filelist_base);
+            console.log(filelist_compare);
+            var ctarr = ct.split("\n");
+            var btarr = bt.split("\n");
+            resemble(img2base64(document.getElementById("testimg01"))).compareTo(img2base64(document.getElementById("testimg02"))).onComplete(data =>{
+                if (data.misMatchPercentage >= 0.01) {
+                    console.log('差分を検知しました。');
+                    newwindow(data.getImageDataUrl());
+                }
+                else{
+                    console.log("差分なし");
+                    newwindow(data.getImageDataUrl());
+                }
+            });
+        };
+        function test(){
+            console.log(filelist_base);
+            console.log(filelist_compare);
+            var ctarr = ct.split("\n");
+            var btarr = bt.split("\n");
+            resemble(filelist_base[0].bin).compareTo(filelist_compare[0].bin).onComplete(data =>{
+                if (data.misMatchPercentage >= 0.01) {
+                    console.log('差分を検知しました。');
+                    newwindow(data.getImageDataUrl());
+                }
+                else{
+                    console.log("差分なし");
+                    newwindow(data.getImageDataUrl());
+                }
+            });
+        };
+
+        function test3(){
+            const base = document.getElementById("baseArea").value.replace(/\r\n|\r/g, "\n");
+            const compare = document.getElementById("compareArea").value.replace(/\r\n|\r/g, "\n");
+
+            const baseArr = base.split("\n");
+            const compareArr = compare.split("\n");
+
+            const sendObj = {
+                baseURL : baseArr,
+                compareURL : compareArr
+            };
+
+            const json = JSON.stringify(sendObj);
+
+            
+            const xhr = new XMLHttpRequest();
+            
+            xhr.onreadystatechange = ()=>{
+                if(xhr.readyState == 4){
+                    if(xhr.status == 200){
+                        console.log(xhr.responseText);
+                    }
+                }
+            };
+            xhr.open("POST","/resemble/test.html");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(json);
+
+        };
+        function newwindow(imageurl) {
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = ()=>{
+                if(xhr.readyState == 4){
+                    if(xhr.status == 200){
+                        const tmp = xhr.responseText;
+                        var nwin = window.open();
+                        nwin.document.title = "result";
+                        nwin.document.open();
+                        nwin.document.write(tmp.replace("{{dataframe}}",imageurl));
+                        nwin.document.close();
+                    }
+                }
+            };
+            xhr.open("POST","./test.html");
+            xhr.send();
+        }
+
+        
+        function test_postjson() {
+            const xhr = new XMLHttpRequest();
+            var jsonText = {
+                "url":"./test.html",
+                "hogehoge":"hugahuga"
+            };
+            var json = JSON.stringify(jsonText);
+            xhr.onreadystatechange = ()=>{
+                if(xhr.readyState == 4){
+                    if(xhr.status == 200){
+                        console.log(xhr.responseText);
+                    }
+                }
+            };
+            xhr.open("POST","/resemble/test.html");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(json);
+        }
+
+        var ct = "",bt = "";
+        document.addEventListener("DOMContentLoaded",()=>{
+            const base = document.getElementById("base");
+            /*
+            base.addEventListener("input",(e)=>{
+                arr_b.length = 0;
+                const fl = e.currentTarget.files;
+                var fl_txt = "";
+                for(var i=0;i<fl.length;i++){
+                    fl_txt += fl[i].name+"\n";
+                    flReader(fl[i],"base");
+                }
+                const t = document.getElementById("baselabel");
+                t.classList.add("select");
+                if(fl_txt == ""){t.classList.remove("select");}
+                t.innerText = fl_txt;
+                bt = fl_txt;
+            });
+            const compare = document.getElementById("compare");
+            compare.addEventListener("input",(e)=>{
+                arr_c.length = 0;
+                const fl = e.currentTarget.files;
+                var fl_txt = "";
+                for(var i=0;i<fl.length;i++){
+                    fl_txt += fl[i].name+"\n";
+                    flReader(fl[i],"compare");
+                }
+                const t = document.getElementById("comparelabel");
+                t.classList.add("select");
+                if(fl_txt == ""){t.classList.remove("select");}
+                t.innerText = fl_txt;
+                ct = fl_txt;
+            });
+            */
+        });
+    </script>
+</head>
+<body>
+    <main>
+        <div class="labelBox">
+            <div class="labelItem">
+                <h3>基準</h3>
+                <textarea name="" id="baseArea" cols="30" rows="10"></textarea>
+                <!--
+                <label for="base" id="baselabel" class="inputlabel"></label>
+                <input type="file" multiple="multiple" accept="image/*" id="base">
+                -->
+            </div>
+            <div class="labelItem">
+                <h3>比較対象</h3>
+                <textarea name="" id="compareArea" cols="30" rows="10"></textarea>
+                <!--
+                <label for="compare" id="comparelabel" class="inputlabel"></label>
+                <input type="file" multiple="multiple" accept="image/*" id="compare">
+                -->
+            </div>
+        </div>
+        <button onclick="test3(this);">比較開始</button>
+
+        <div class="wrap">
+            <h4>テストができます</h4>
+            <button onclick="test_postjson(this);">比較開始</button>
+            <div class="testImage">
+                <img src="./image/test01.png" alt="" id="testimg01">
+                <img src="./image/test02.png" alt="" id="testimg02">
+            </div>
+        </div>
+    </main>
+</body>
+</html>
